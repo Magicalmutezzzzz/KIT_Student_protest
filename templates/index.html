@@ -2,48 +2,372 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>College Petition</title>
+  <title>College Petition — Student Portal</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    body { font-family: Arial, sans-serif; background:#f5f7fb; margin:0; padding:0; }
-    .container{ max-width:900px; margin:40px auto; padding:20px; background:white; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.06) }
-    h1{ margin:0 0 10px; }
-    .links { display:flex; gap:12px; margin-top:16px; }
-    a.button{ padding:12px 18px; background:#0366d6; color:white; text-decoration:none; border-radius:6px; }
-    p.small{ color:#555; }
-
-    h1{
-      padding-bottom: 40px;
-      background-color: #0d3bd5;
-      color: #f5f6f8;
+    :root{
+      --accent:#0d6efd;
+      --muted:#6b7280;
+      --card:#ffffff;
+      --bg:#f5f7fb;
+      --glass: rgba(255,255,255,0.6);
+      --success:#10b981;
+      --danger:#ef4444;
+      --shadow: 0 8px 24px rgba(11,22,60,0.06);
+      --radius:12px;
+      --maxw:1100px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
+
+    html,body{height:100%; margin:0; background:var(--bg); color:#0f172a;}
+    .wrap{max-width:var(--maxw); margin:28px auto; padding:18px;}
+
+    /* Header */
+    header.appbar{
+      display:flex; align-items:center; gap:18px; padding:16px 20px; border-radius:14px;
+      background: linear-gradient(90deg,#0d3bd5,#0b6bd6); color:white; box-shadow:var(--shadow);
+    }
+    .brand{display:flex; align-items:center; gap:14px;}
+    .brand img{height:64px; width:auto; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.12);}
+    .brand h1{margin:0; font-size:20px; letter-spacing:1px;}
+    .brand p{margin:0; font-size:12px; opacity:0.95;}
+
+    /* Hero card */
+    .hero{
+      display:flex; gap:18px; align-items:center; margin-top:18px; background:linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.45));
+      padding:20px; border-radius:12px; box-shadow:0 6px 18px rgba(9,30,66,0.04);
+    }
+    .hero-left{flex:1}
+    .hero-left h2{margin:0 0 8px 0; font-size:20px;}
+    .hero-left p{margin:0; color:var(--muted);}
+
+    .ctas{margin-top:14px; display:flex; gap:12px; flex-wrap:wrap;}
+    .btn{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 14px; border-radius:10px; text-decoration:none; color:white;
+      background:var(--accent); box-shadow:0 6px 18px rgba(13,107,214,0.18);
+      font-weight:600;
+    }
+    .btn.alt{ background:#0aa360; box-shadow:0 6px 18px rgba(10,163,96,0.12); }
+
+    /* Stats */
+    .stats{display:flex; gap:12px; margin-left:auto; align-items:center;}
+    .stat{ background:white; padding:10px 14px; border-radius:10px; min-width:120px; text-align:center; box-shadow:var(--shadow);}
+    .stat .num{ font-weight:700; font-size:18px; }
+    .stat .lbl{ color:var(--muted); font-size:12px;}
+
+    /* Main area */
+    .grid{ display:grid; grid-template-columns: 1fr 380px; gap:18px; margin-top:18px; align-items:start; }
+    @media (max-width:980px){ .grid{grid-template-columns:1fr} .stats{margin-top:12px;} }
+
+    /* Left column: cards */
+    .cards{ display:grid; gap:12px; }
+    .card{ background:var(--card); border-radius:12px; padding:14px; box-shadow:var(--shadow); }
+    .card h3{margin:0; font-size:16px;}
+    .card p{margin:6px 0; color:var(--muted); font-size:13px;}
+
+    /* Flashcards grid inside right column */
+    .flashgrid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    @media (max-width:700px){ .flashgrid{grid-template-columns:1fr} }
+
+    .flash{
+      background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,250,0.9));
+      border-radius:12px; padding:12px; box-shadow:0 8px 20px rgba(6,12,40,0.06);
+      transition:transform .18s ease, box-shadow .18s ease;
+      display:flex; gap:12px; align-items:flex-start;
+    }
+    .flash:hover{ transform:translateY(-6px); box-shadow:0 18px 40px rgba(6,12,40,0.12); }
+    .flash .logo{ width:44px; height:44px; border-radius:10px; background:#eef2ff; display:flex; align-items:center; justify-content:center; font-weight:700; color:#0d3bd5;}
+    .flash .meta{flex:1}
+    .flash .meta .title{font-weight:700; margin:0; font-size:14px;}
+    .flash .meta .sub{margin:2px 0 6px 0; color:var(--muted); font-size:13px;}
+    .mini{ font-size:13px; color:var(--muted); margin:0; display:flex; gap:8px; align-items:center; }
+
+    .actions{ display:flex; gap:8px; margin-top:8px; }
+    .chip{ padding:6px 8px; background:#f3f4f6; border-radius:8px; font-size:13px; cursor:pointer; }
+    .chip.copy{ background:#eff6ff; color:#0d3bd5; }
+
+    /* Admin area */
+    .admin{ background:#fff; border-radius:12px; padding:12px; box-shadow:var(--shadow); }
+    .field{ display:flex; gap:8px; align-items:center; }
+    .input{ padding:10px; border-radius:8px; border:1px solid #e6e9ef; flex:1; }
+
+    /* Footer */
+    footer{ margin-top:22px; text-align:center; color:var(--muted); font-size:13px; }
+
+    /* small helpers */
+    .muted{ color:var(--muted); font-size:13px; }
+    .small{ font-size:12px; color:var(--muted); }
   </style>
 </head>
 <body>
-<header style="display:flex; align-items:center; gap:12px; padding:12px; background:#0d3bd5;">
-  <a href="{{ url_for('index') }}" style="display:inline-block;">
-    <img src="{{ url_for('static', filename='logo.jpg') }}"
-         alt="KIT logo"
-         style="height:60px; width:auto; display:block; margin-left:12px;" />
-  </a>
+  <div class="wrap">
+    <!-- Header -->
+    <header class="appbar">
+      <div class="brand">
+        <img src="{{ url_for('static', filename='logo.jpg') }}" alt="KIT logo">
+        <div>
+          <h1>KANPUR INSTITUTE OF TECHNOLOGY</h1>
+          <p>Student Petition & Demand Portal</p>
+        </div>
+      </div>
 
-  <div style="color:#fff; margin-left:16px;">
-    <h1 style="margin:0; font-size:22px; letter-spacing:1px;">KANPUR INSTITUTE OF TECHNOLOGY</h1>
-  </div>
-</header>
-  <div class="container">
-    <h2>College Protest — Student Portal</h2>
-    <p class="small">Use this portal to sign the petition or submit demands. Your entry will be stored and displayed below on each page.</p>
+      <div class="stats" aria-hidden="true">
+        <div class="stat">
+          <div class="num" id="totalCount">—</div>
+          <div class="lbl">Total entries</div>
+        </div>
+        <div class="stat">
+          <div class="num" id="petitionCount">—</div>
+          <div class="lbl">Petitions</div>
+        </div>
+        <div class="stat">
+          <div class="num" id="demandCount">—</div>
+          <div class="lbl">Demands</div>
+        </div>
+      </div>
+    </header>
 
-    <div class="links">
-      <!-- FIXED LINKS BELOW -->
-      <a class="button" href="/petition">Sign Petition</a>
-      <a class="button" href="/demand">Submit Demand</a>
+    <!-- Hero -->
+    <div class="hero" role="region" aria-label="hero">
+      <div class="hero-left">
+        <h2>Speak up. Be heard.</h2>
+        <p class="muted">Sign the petition or submit demands respectfully</p>
+
+        <div class="ctas">
+          <a class="btn" href="/petition">✍️ Sign Petition</a>
+          <a class="btn alt" href="/demand">📢 Submit Demand</a>
+          <button class="btn" id="howBtn" style="background:#6b7280">❓ How it works</button>
+        </div>
+      </div>
+
+      <div style="min-width:240px; text-align:right;">
+        <img src="{{ url_for('static', filename='logo.jpg') }}" alt="logo" style="height:70px; border-radius:10px; box-shadow:0 8px 24px rgba(6,12,40,0.06);">
+        <p class="small" style="margin-top:8px">Last updated: <span id="lastUpdated">—</span></p>
+      </div>
     </div>
 
-    <hr style="margin:20px 0"/>
+    <!-- Main grid -->
+    <div class="grid">
+      <!-- left column -->
+      <div class="cards">
+        <div class="card">
+          <h3>Why use this portal?</h3>
+          <p class="muted">This portal captures student's concerns in a single place so student administration can review them. All entries are timestamped.</p>
+          <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            <div class="chip">Respectful language</div>
+            <div class="chip">One entry per student</div>
+          </div>
+        </div>
 
-    <p>Admin / Organizer notes: Keep campus calm — encourage clear & respectful wording.</p>
+        <div class="card">
+          <h3>Recent submissions</h3>
+          <p class="muted">Below are the most recent submissions (pulled live).</p>
+          <div id="recentList" style="margin-top:10px;">
+            <div class="small muted">Loading...</div>
+          </div>
+        </div>
+
+      <!-- right column -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div class="flash grid card" style="padding:14px; display:block;">
+          <h3 style="margin:0 0 8px 0;">Important Contacts (quick cards)</h3>
+          <p class="small muted">Tap “copy” to copy phone/email/address to clipboard. Replace placeholder values with official contacts.</p>
+
+          <div class="flashgrid" style="margin-top:10px;">
+            <!-- AKTU Lucknow -->
+            <div class="flash" id="card-aktu">
+              <div class="logo">AK</div>
+              <div class="meta">
+                <div class="title">AKTU Lucknow</div>
+                <div class="sub">Dr. A. P. J. Abdul Kalam Technical University</div>
+                <p class="mini"><strong>Phone:</strong>&nbsp;<span id="aktu-phone">0522 233 6805</span></p>
+                <p class="mini"><strong>Email:</strong>&nbsp;<span id="aktu-email">vc@aktu.ac.in</span></p>
+                <p class="mini"><strong>Address:</strong>&nbsp;<span id="aktu-address">Vistar Yojna, AKTU CDRI Rd, Naya Khera, Jankipuram, Lucknow, Uttar Pradesh 226031</span></p>
+                <div class="actions">
+                  <div class="chip copy" data-copy="#aktu-phone">Copy Phone</div>
+                  <div class="chip copy" data-copy="#aktu-email">Copy Email</div>
+                  <div class="chip copy" data-copy="#aktu-address">Copy Address</div>
+                </div>
+                <div class="small muted" style="margin-top:6px"></div>
+              </div>
+            </div>
+
+            <!-- KIT Kanpur -->
+            <div class="flash" id="card-kit">
+              <div class="logo">KIT</div>
+              <div class="meta">
+                <div class="title">Kanpur Institute of Technology</div>
+                <div class="sub">KIT Kanpur (Autonomous)</div>
+                <p class="mini"><strong>Phone:</strong>&nbsp;<span id="kit-phone">+91-82629-05906</span></p>
+                <p class="mini"><strong>Email:</strong>&nbsp;<span id="kit-email">bv@kit.ac.in</span></p>
+                <p class="mini"><strong>Address:</strong>&nbsp;<span id="kit-address">A1, UPSIDC Industrial Area, Chakeri Ward, Rooma, Kanpur, Uttar Pradesh 208007</span></p>
+                <div class="actions">
+                  <div class="chip copy" data-copy="#kit-phone">Copy Phone</div>
+                  <div class="chip copy" data-copy="#kit-email">Copy Email</div>
+                  <div class="chip copy" data-copy="#kit-address">Copy Address</div>
+                </div>
+                <div class="small muted" style="margin-top:6px">Director: <em id="kit-director">Dr.Brajesh Varshney</em> — <span id="kit-director-email">bv@kit.ac.in</span></div>
+              </div>
+            </div>
+
+            <!-- District Magistrate -->
+            <div class="flash" id="card-dm">
+              <div class="logo">DM</div>
+              <div class="meta">
+                <div class="title">District Magistrate – Kanpur</div>
+                <div class="sub">Contact for district-level escalation</div>
+                <p class="mini"><strong>Phone:</strong>&nbsp;<span id="dm-phone">NA</span></p>
+                <p class="mini"><strong>Email:</strong>&nbsp;<span id="dm-email">dmkap@nic.in</span></p>
+                <div class="actions">
+                  <div class="chip copy" data-copy="#dm-phone">Copy Phone</div>
+                  <div class="chip copy" data-copy="#dm-email">Copy Email</div>
+                </div>
+                <div class="small muted" style="margin-top:6px">* Please confirm the DM contact from the official Kanpur district website.</div>
+              </div>
+            </div>
+
+            <!-- More cards (placeholders) -->
+            <div class="flash">
+              <div class="logo">ICE</div>
+              <div class="meta">
+                <div class="title">KIT Admin Office</div>
+                <div class="sub">General enquiries</div>
+                <p class="mini"><strong>Phone:</strong>&nbsp;<span id="admin-phone">+9182629 05906</span></p>
+                <p class="mini"><strong>Email:</strong>&nbsp;<span id="admin-email">info@kit.ac.in</span></p>
+                <div class="actions">
+                  <div class="chip copy" data-copy="#admin-phone">Copy Phone</div>
+                  <div class="chip copy" data-copy="#admin-email">Copy Email</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Safety & moderation</h3>
+          <p class="muted">All entries are stored as submitted. Please avoid abusive language. Admins may remove or redact inflammatory submissions before sharing with authorities.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <footer>
+      <div class="small muted">Portal built for student voices — use responsibly. Contact <a href="mailto:office@kit.ac.in">info@kit.ac.in</a> for queries.</div>
+    </footer>
+
   </div>
+
+  <script>
+    // Helper: fetch counts and recent records
+    async function refreshCountsAndRecent(){
+      try {
+        const res = await fetch('/api/counts');
+        const jc = await res.json();
+        if (jc && jc.success) {
+          document.getElementById('totalCount').textContent = jc.total;
+          document.getElementById('petitionCount').textContent = jc.petitions;
+          document.getElementById('demandCount').textContent = jc.demands;
+          document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+        } else {
+          document.getElementById('totalCount').textContent = '—';
+        }
+      } catch(e){
+        console.warn('counts error', e);
+        document.getElementById('totalCount').textContent = '—';
+      }
+
+      // fetch recent records
+      try {
+        const r = await fetch('/api/records');
+        const jr = await r.json();
+        const wrap = document.getElementById('recentList');
+        if (!jr.success || !jr.records) {
+          wrap.innerHTML = '<div class="small muted">No records / cannot fetch.</div>';
+          return;
+        }
+        const recs = jr.records.slice(0,6);
+        if (recs.length === 0) {
+          wrap.innerHTML = '<div class="small muted">No records yet.</div>';
+          return;
+        }
+        wrap.innerHTML = recs.map(rc => `
+          <div style="padding:8px 0; border-bottom:1px solid #f1f5f9;">
+            <div style="font-weight:700">${escapeHtml(rc.afn)} <span class="small muted">• ${rc.year} / ${rc.branch}</span></div>
+            <div class="small muted" style="margin-top:6px">${escapeHtml(rc.comment).slice(0,120)}${rc.comment.length>120?'...':''}</div>
+            <div class="small muted" style="margin-top:6px">${new Date(rc.created_at).toLocaleString()}</div>
+          </div>
+        `).join('');
+      } catch(e){
+        console.warn('recent error', e);
+      }
+    }
+
+    // initial load
+    refreshCountsAndRecent();
+    setInterval(refreshCountsAndRecent, 20000);
+
+    // Copy to clipboard buttons
+    document.addEventListener('click', (e)=>{
+      const t = e.target;
+      if (t.matches('.chip.copy')) {
+        const sel = t.getAttribute('data-copy');
+        try {
+          const txt = document.querySelector(sel).textContent.trim();
+          navigator.clipboard.writeText(txt).then(()=> {
+            t.textContent = 'Copied ✓';
+            setTimeout(()=> t.textContent = sel.includes('email') ? 'Copy Email' : (sel.includes('phone') ? 'Copy Phone' : 'Copy'), 1500);
+          });
+        } catch(err){
+          console.warn('copy failed', err);
+        }
+      }
+    });
+
+    // escape html
+    function escapeHtml(s){
+      if(!s) return '';
+      return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+    }
+
+    // How it works modal (simple)
+    document.getElementById('howBtn').addEventListener('click', ()=>{
+      alert('How it works:\\n\\n1) Fill AFN and details on petition or demand page.\\n2) Submissions are stored in DB and visible to admins.\\n3) Admin can download CSV from the admin area for review and official use.');
+    });
+
+    // Admin CSV download
+    document.getElementById('downloadCsv').addEventListener('click', async ()=>{
+      const key = document.getElementById('adminKey').value.trim();
+      const msg = document.getElementById('adminMsg');
+      msg.textContent = '';
+      if (!key) { msg.textContent = 'Please enter the ADMIN_KEY to download.'; return; }
+
+      try {
+        const res = await fetch('/admin/export.csv', {
+          headers: { 'X-ADMIN-KEY': key }
+        });
+        if (!res.ok) {
+          const j = await res.json().catch(()=>({error:'unknown'}));
+          msg.textContent = 'Error: ' + (j.error || res.statusText);
+          return;
+        }
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'petition_records.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        msg.textContent = 'Download started.';
+      } catch(err){
+        console.error(err);
+        msg.textContent = 'Network error while downloading CSV.';
+      }
+    });
+
+  </script>
 </body>
 </html>
