@@ -20,7 +20,17 @@
   </style>
 </head>
 <body>
-  <header><h1>KANPUR INSTITUTE OF TECHNOLOGY <img src="logo.jpg" alt="_" width="100px"> </header>
+<header style="display:flex; align-items:center; gap:12px; padding:12px; background:#0d3bd5;">
+  <a href="{{ url_for('index') }}" style="display:inline-block;">
+    <img src="{{ url_for('static', filename='logo.jpg') }}"
+         alt="KIT logo"
+         style="height:60px; width:auto; display:block; margin-left:12px;" />
+  </a>
+
+  <div style="color:#fff; margin-left:16px;">
+    <h1 style="margin:0; font-size:22px; letter-spacing:1px;">KANPUR INSTITUTE OF TECHNOLOGY</h1>
+  </div>
+</header>
   <div class="container">
     <h2>College Protest — Student Portal</h2>
     <p class="small">Use this portal to sign the petition or submit demands. Your entry will be stored and displayed below on each page.</p>
