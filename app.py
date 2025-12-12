@@ -33,8 +33,22 @@ except pymongo_errors.PyMongoError as e:
 
 # --- ADMIN KEY (for CSV export) ---
 ADMIN_KEY = os.environ.get("ADMIN_KEY", None)
-
-
+#____health____
+@app.route("/health", methods=["GET"])
+def health_check():
+    """Return DB connection status and exception if any."""
+    info = {"db_connected": False, "db_name": DB_NAME}
+    try:
+        if client is None:
+            info["error"] = "Mongo client is None (connection failure during startup)"
+            return jsonify(info), 503
+        client.admin.command("ping")
+        info["db_connected"] = True
+        return jsonify(info)
+    except Exception as e:
+        info["error"] = str(e)
+        return jsonify(info), 503
+        
 # --- ROUTES serving pages ---
 @app.route("/")
 def index():
